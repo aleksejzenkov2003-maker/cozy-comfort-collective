@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Send, Loader2 } from "lucide-react";
 import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
   name: z.string().trim().min(2, "Имя должно содержать минимум 2 символа").max(100, "Имя слишком длинное"),
@@ -31,7 +32,6 @@ const RequestForm = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
     if (errors[name as keyof FormData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -41,7 +41,6 @@ const RequestForm = () => {
     e.preventDefault();
     setErrors({});
 
-    // Validate form data
     const result = formSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors: Partial<Record<keyof FormData, string>> = {};
@@ -56,21 +55,35 @@ const RequestForm = () => {
 
     setIsLoading(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    toast({
-      title: "Заявка отправлена!",
-      description: "Мы свяжемся с вами в ближайшее время.",
+    const { error } = await supabase.from("requests").insert({
+      name: formData.name,
+      company: formData.company || null,
+      phone: formData.phone,
+      email: formData.email,
+      message: formData.message || null,
     });
 
-    setFormData({
-      name: "",
-      company: "",
-      phone: "",
-      email: "",
-      message: "",
-    });
+    if (error) {
+      toast({
+        title: "Ошибка отправки",
+        description: "Попробуйте позже или свяжитесь с нами по телефону",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Заявка отправлена!",
+        description: "Мы свяжемся с вами в ближайшее время.",
+      });
+
+      setFormData({
+        name: "",
+        company: "",
+        phone: "",
+        email: "",
+        message: "",
+      });
+    }
+    
     setIsLoading(false);
   };
 
