@@ -61,8 +61,14 @@ const CTASection = () => {
               
               <div className="bg-accent/10 backdrop-blur-sm rounded-xl p-5 sm:p-6 border border-accent/20">
                 <h4 className="font-semibold text-primary-foreground mb-2">Быстрая связь</h4>
+                <a 
+                  href="tel:+79202616645" 
+                  className="text-xl sm:text-2xl font-bold text-accent hover:text-accent/80 transition-colors block mb-2"
+                >
+                  +7 920 261 6645
+                </a>
                 <p className="text-primary-foreground/80 text-sm sm:text-base">
-                  Заполните форму, и мы свяжемся с вами в течение 1 рабочего дня
+                  Или заполните форму, и мы свяжемся с вами в течение 1 рабочего дня
                 </p>
               </div>
             </div>
